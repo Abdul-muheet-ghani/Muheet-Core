@@ -1,0 +1,2 @@
+WARNING: ../rtl/instruction_memo.v:34: $readmemh: Standard inconsistency, following 1364-2005.
+ERROR: ../rtl/instruction_memo.v:34: $readmemh: Unable to open coef.mem for reading.

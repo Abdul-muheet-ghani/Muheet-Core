@@ -1,2 +1,3 @@
-WARNING: ../rtl/instruction_memo.v:34: $readmemh: Standard inconsistency, following 1364-2005.
-ERROR: ../rtl/instruction_memo.v:34: $readmemh: Unable to open coef.mem for reading.
+WARNING: src/rv32i_core_tb.v:15: $readmemh: Standard inconsistency, following 1364-2005.
+ERROR: src/rv32i_core_tb.v:15: $readmemh: Unable to open ../memory.mem for reading.
+VCD info: dumpfile wave.vcd opened for output.

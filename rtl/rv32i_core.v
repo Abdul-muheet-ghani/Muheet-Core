@@ -10,19 +10,22 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module RV32I_top #(parameter XLEN = 32)
+module rv32i_core #(parameter XLEN = 32)
 (
     input             clk,
+    input             reset_n,
     input             we,
     input             reset,
     input  [XLEN-1:0] data_in,
     output [14:0] control_unit_out
+    
 );
 
    /////////////////////////////////////////////////////////
    //ports
    /////////////////////////////////////////////////////////
 
+   wire [XLEN-1:0] fetch_address;
    wire [XLEN-1:0] OUT_T;
    wire [XLEN-1:0] addr;
    wire [XLEN-1:0] offset_adder;
@@ -40,12 +43,12 @@ module RV32I_top #(parameter XLEN = 32)
    wire [XLEN-1:0] ALU_OUTPUT;
    wire [XLEN-1:0] write_adder;
    wire [XLEN-1:0] write_back;
-   wire [10:0]      contrl_decoder;
+   wire [8:0]      contrl_decoder;
    wire [4:0]      rd ;          //destination register
-   wire            branch_p;
+   wire            branch_true;
    wire [XLEN-1:0] csr_data_out;
    reg [XLEN-1:0]  wb,address_q;
-   reg [1:0]       next_pc=0;
+   reg [1:0]       pc_sel=0;
 
    wire            external_int_in;
    wire            software_int_in;
@@ -66,14 +69,14 @@ module RV32I_top #(parameter XLEN = 32)
    //procedural assignment
    /////////////////////////////////////////////////////////
 
-   assign offset_adder = (we) ? 0 : address_q + 4; 
-   assign addr = (next_pc == 2'b00) ? offset_adder :
-                 (next_pc == 2'b01) ? UJ_type :
-                 (next_pc == 2'b10) ? OUT_T :
-                 (next_pc == 2'b11) ? I_type + reg_1 : 0;
+   // assign offset_adder = (we) ? 0 : address_q + 4; 
+   // assign addr = (pc_sel == 2'b00) ? offset_adder :
+   //               (pc_sel == 2'b01) ? UJ_type :
+   //               (pc_sel == 2'b10) ? OUT_T :
+   //               (pc_sel == 2'b11) ? I_type + reg_1 : 0;
 
-   assign PC   = (trap_true) ? trap_address : (return_trap)
-                             ? return_address : addr;
+   // assign PC   = (trap_true) ? trap_address : (return_trap)
+   //                           ? return_address : addr;
 
    // output of control unit 10:9 is for operand a selection
    assign reg_1 = (control_unit_out[10:9] == 2'b00) ? operand1 :
@@ -96,7 +99,7 @@ module RV32I_top #(parameter XLEN = 32)
    assign write_back = (control_unit_out[12]) ? 32'b0 : 
                        (control_unit_out[13]) ? write_adder : ALU_OUTPUT;
 
-   assign OUT_T = (branch_p) ? SB_type : offset_adder;
+   //assign OUT_T = (branch_p) ? SB_type : offset_adder;
 
    // 11:7 destination register
    assign rd = contrl_decoder[3] ? 5'b00001 : inst_out[11:7];
@@ -105,9 +108,24 @@ module RV32I_top #(parameter XLEN = 32)
    //Module Instantiation
    /////////////////////////////////////////////////////////
 
+   rv32i_fetch fetch_i(
+      .clk_in          (clk),
+      .reset_n         (reset_n),
+
+      .branch_true     (branch_true),
+      .pc_sel          (pc_sel),
+
+      .UJ_immediate_in (UJ_type),
+      .SB_immediate_in (SB_type),
+      .I_immediate_in  (I_type),
+      .rs1_in          (reg_1),
+
+      .fetch_address_o (fetch_address)
+   );
+
    //Address of instruction_mem from 2 to 13 because of offset = 4
    ram instruction_mem(.clk_in          (clk),
-                       .address_in      (address_q[13:2]),
+                       .address_in      (fetch_address[13:2]),
                        .data_in         (data_in),
                        .instruction_out (inst_out),
                        .we_in           (we)
@@ -121,7 +139,7 @@ module RV32I_top #(parameter XLEN = 32)
                              .decoded_out    (contrl_decoder)
                            );
 
-   unit i_control_unit(.type_decode_in (contrl_decoder[8:0]),
+   unit i_control_unit(.type_decode_in (contrl_decoder),
                      .function_3_in    (inst_out[14:12]),
                      .function_7_in    (inst_out[30]),
                      .control_unit_out (control_unit_out)
@@ -140,7 +158,7 @@ module RV32I_top #(parameter XLEN = 32)
                  .operand2_in     (reg_2),
                  .function_3_in   (inst_out[14:12]),
                  .branch_en_in    (control_unit_out[11]),
-                 .branch_taken_out(branch_p)
+                 .branch_taken_out(branch_true)
                  );
 
    // Output of control unit control_unit_out[12] present mem_write enable
@@ -155,8 +173,8 @@ module RV32I_top #(parameter XLEN = 32)
 
    // 19:15 rs1 address
    // 24:20 rs2 address
-   reg_file i_reg_file(.clk_in                 (clk),
-                     .reset_in               (reset),
+   reg_file i_reg_file(.clk_in               (clk),
+                     .reset_in               (reset_n),
                      .rs1_address_in         (inst_out[19:15]),
                      .rs2_address_in         (inst_out[24:20]),
                      .destination_register_in(rd),
@@ -166,7 +184,7 @@ module RV32I_top #(parameter XLEN = 32)
                      );
 
    immediate i_immediate(.instruction_in    (inst_out),
-                       .pc_in             (address_q),
+                       .pc_in             (fetch_address),
                        .I_type_imm_out    (I_type),
                        .S_type_imm_out    (S_type),
                        .SB_type_imm_out   (SB_type),
@@ -189,7 +207,7 @@ module RV32I_top #(parameter XLEN = 32)
    end
 
    always @* begin
-      next_pc = control_unit_out[7:6];
+      pc_sel = control_unit_out[7:6];
 
       // bit 3 is for jump
       if (contrl_decoder[3]) begin

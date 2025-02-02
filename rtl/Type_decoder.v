@@ -18,7 +18,7 @@ module control (
    output reg        ecall_out,
    output reg        ebreak_out,
    output reg        mret_out,
-   output reg [10:0] decoded_out
+   output reg [8:0] decoded_out
  );
 
    /////////////////////////////////////////////////////////
@@ -27,18 +27,16 @@ module control (
 
    always @* begin
       case (opcode_in[6:0])
-         `OPCODE_RTYPE  : {decoded_out,illegal_ins_out} = {(11'b10000000000),1'b0};
-         `OPCODE_ITYPE  : {decoded_out,illegal_ins_out} = {(11'b01000000000),1'b0};
-         `OPCODE_LOAD   : {decoded_out,illegal_ins_out} = {(11'b00100000000),1'b0};
-         `OPCODE_STORE  : {decoded_out,illegal_ins_out} = {(11'b00010000000),1'b0};
-         `OPCODE_BRANCH : {decoded_out,illegal_ins_out} = {(11'b00001000000),1'b0};
-         `OPCODE_JAL    : {decoded_out,illegal_ins_out} = {(11'b00000100000),1'b0};
-         `OPCODE_JALR   : {decoded_out,illegal_ins_out} = {(11'b00000010000),1'b0};
-         `OPCODE_LUI    : {decoded_out,illegal_ins_out} = {(11'b00000001000),1'b0};
-         `OPCODE_AUIPC  : {decoded_out,illegal_ins_out} = {(11'b00000000100),1'b0};
-         `OPCODE_SYSTEM : {decoded_out,illegal_ins_out} = {(11'b00000000010),1'b0};
-         `OPCODE_SYSTEM : {decoded_out,illegal_ins_out} = {(11'b00000000001),1'b0};
-         default: {decoded_out,illegal_ins_out} = {11'b0,1'b1};
+         `OPCODE_RTYPE  : decoded_out = 9'b100000000;
+         `OPCODE_ITYPE  : decoded_out = 9'b010000000;
+         `OPCODE_LOAD   : decoded_out = 9'b001000000;
+         `OPCODE_STORE  : decoded_out = 9'b000100000;
+         `OPCODE_BRANCH : decoded_out = 9'b000010000;
+         `OPCODE_JAL    : decoded_out = 9'b000001000;
+         `OPCODE_JALR   : decoded_out = 9'b000000100;
+         `OPCODE_LUI    : decoded_out = 9'b000000010;
+         `OPCODE_AUIPC  : decoded_out = 9'b000000001;
+         default: decoded_out = 9'b0;
       endcase
    end
 

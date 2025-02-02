@@ -1,0 +1,740 @@
+$date
+	Sun Feb  2 17:07:04 2025
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module rv32i_core_tb $end
+$var reg 1 ! clk $end
+$var reg 1 " reset_n $end
+$scope module uut $end
+$var wire 32 # OUT_T [31:0] $end
+$var wire 32 $ PC [31:0] $end
+$var wire 1 ! clk $end
+$var wire 32 % csr_data_out [31:0] $end
+$var wire 32 & data_in [31:0] $end
+$var wire 32 ' offset_adder [31:0] $end
+$var wire 1 ( reset $end
+$var wire 1 " reset_n $end
+$var wire 1 ) we $end
+$var wire 32 * write_back [31:0] $end
+$var wire 32 + write_adder [31:0] $end
+$var wire 32 , reg_2 [31:0] $end
+$var wire 32 - reg_1 [31:0] $end
+$var wire 5 . rd [4:0] $end
+$var wire 32 / operand2 [31:0] $end
+$var wire 32 0 operand1 [31:0] $end
+$var wire 1 1 mret_in $end
+$var wire 32 2 inst_out [31:0] $end
+$var wire 32 3 immediate_data [31:0] $end
+$var wire 1 4 illegal_instruction_in $end
+$var wire 32 5 fetch_address [31:0] $end
+$var wire 1 6 ecall_in $end
+$var wire 1 7 ebreak_in $end
+$var wire 15 8 control_unit_out [14:0] $end
+$var wire 9 9 contrl_decoder [8:0] $end
+$var wire 1 : branch_true $end
+$var wire 32 ; U_type [31:0] $end
+$var wire 32 < UJ_type [31:0] $end
+$var wire 32 = S_type [31:0] $end
+$var wire 32 > SB_type [31:0] $end
+$var wire 32 ? I_type [31:0] $end
+$var wire 32 @ ALU_OUTPUT [31:0] $end
+$var reg 32 A address_q [31:0] $end
+$var reg 2 B pc_sel [1:0] $end
+$var reg 32 C wb [31:0] $end
+$scope module fetch_i $end
+$var wire 1 ! clk_in $end
+$var wire 2 D pc_sel [1:0] $end
+$var wire 1 " reset_n $end
+$var wire 32 E rs1_in [31:0] $end
+$var wire 32 F pc [31:0] $end
+$var wire 1 : branch_true $end
+$var wire 32 G UJ_immediate_in [31:0] $end
+$var wire 32 H SB_immediate_in [31:0] $end
+$var wire 32 I I_immediate_in [31:0] $end
+$var reg 32 J fetch_address_o [31:0] $end
+$var reg 32 K pcplus4 [31:0] $end
+$upscope $end
+$scope module i_ALU $end
+$var wire 4 L alu_operand_in [3:0] $end
+$var wire 32 M operand1_in [31:0] $end
+$var wire 32 N operand2_in [31:0] $end
+$var reg 32 O alu_result_out [31:0] $end
+$upscope $end
+$scope module i_branch $end
+$var wire 1 P branch_en_in $end
+$var wire 3 Q function_3_in [2:0] $end
+$var wire 32 R operand1_in [31:0] $end
+$var wire 32 S operand2_in [31:0] $end
+$var reg 1 : branch_taken_out $end
+$upscope $end
+$scope module i_control_decoder $end
+$var wire 32 T opcode_in [31:0] $end
+$var reg 9 U decoded_out [8:0] $end
+$var reg 1 7 ebreak_out $end
+$var reg 1 6 ecall_out $end
+$var reg 1 4 illegal_ins_out $end
+$var reg 1 1 mret_out $end
+$upscope $end
+$scope module i_control_unit $end
+$var wire 3 V function_3_in [2:0] $end
+$var wire 1 W function_7_in $end
+$var wire 9 X type_decode_in [8:0] $end
+$var reg 15 Y control_unit_out [14:0] $end
+$var reg 3 Z sel [2:0] $end
+$upscope $end
+$scope module i_data_mem $end
+$var wire 32 [ address_in [31:0] $end
+$var wire 1 ! clk_in $end
+$var wire 1 \ load_en_in $end
+$var wire 1 ] store_en_in $end
+$var wire 32 ^ store_data_in [31:0] $end
+$var reg 32 _ data_out [31:0] $end
+$upscope $end
+$scope module i_immediate $end
+$var wire 32 ` pc_in [31:0] $end
+$var wire 32 a instruction_in [31:0] $end
+$var reg 12 b I_type [11:0] $end
+$var reg 32 c I_type_imm_out [31:0] $end
+$var reg 12 d SB_type [11:0] $end
+$var reg 32 e SB_type_imm_out [31:0] $end
+$var reg 12 f S_type [11:0] $end
+$var reg 32 g S_type_imm_out [31:0] $end
+$var reg 21 h UJ_type [20:0] $end
+$var reg 32 i UJ_type_imm_out [31:0] $end
+$var reg 32 j U_type_imm_out [31:0] $end
+$upscope $end
+$scope module i_reg_file $end
+$var wire 1 ! clk_in $end
+$var wire 5 k destination_register_in [4:0] $end
+$var wire 32 l input_data_in [31:0] $end
+$var wire 1 " reset_in $end
+$var wire 5 m rs1_address_in [4:0] $end
+$var wire 5 n rs2_address_in [4:0] $end
+$var wire 32 o rs2_data_out [31:0] $end
+$var wire 32 p rs1_data_out [31:0] $end
+$var integer 32 q i [31:0] $end
+$upscope $end
+$scope module instruction_mem $end
+$var wire 12 r address_in [11:0] $end
+$var wire 1 ! clk_in $end
+$var wire 32 s data_in [31:0] $end
+$var wire 1 ) we_in $end
+$var reg 32 t instruction_out [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+bx t
+bz s
+b0 r
+bx q
+bx p
+bx o
+bx n
+bx m
+bx l
+bx k
+bx000000000000 j
+bx i
+bx0 h
+bx g
+bx f
+bx e
+bx0 d
+bx c
+bx b
+bx a
+b0 `
+bx _
+bx ^
+x]
+x\
+bx [
+bx Z
+bx Y
+bx X
+xW
+bx V
+bx U
+bx T
+bx S
+bx R
+bx Q
+xP
+bx O
+bx N
+bx M
+bx L
+b0 K
+b0 J
+bx I
+bx H
+bx G
+bx F
+bx E
+bx D
+bx C
+bx B
+bx A
+bx @
+bx ?
+bx >
+bx =
+bx <
+bx000000000000 ;
+x:
+bx 9
+bx 8
+x7
+x6
+b0 5
+x4
+bx 3
+bx 2
+x1
+bx 0
+bx /
+bx .
+bx -
+bx ,
+bx +
+bx *
+z)
+z(
+bz '
+bz &
+bz %
+bz $
+bz #
+0"
+0!
+$end
+#5000
+bz A
+1!
+#10000
+0!
+#15000
+1!
+#20000
+0!
+#25000
+1!
+#30000
+0!
+#35000
+bx r
+bx 5
+bx J
+bx `
+bx K
+b100000 q
+1!
+1"
+#40000
+0!
+#45000
+b100000 q
+1!
+#50000
+0!
+#55000
+b100000 q
+1!
+#60000
+0!
+#65000
+b100000 q
+1!
+#70000
+0!
+#75000
+b100000 q
+1!
+#80000
+0!
+#85000
+b100000 q
+1!
+#90000
+0!
+#95000
+b100000 q
+1!
+#100000
+0!
+#105000
+b100000 q
+1!
+#110000
+0!
+#115000
+b100000 q
+1!
+#120000
+0!
+#125000
+b100000 q
+1!
+#130000
+0!
+#135000
+b100000 q
+1!
+#140000
+0!
+#145000
+b100000 q
+1!
+#150000
+0!
+#155000
+b100000 q
+1!
+#160000
+0!
+#165000
+b100000 q
+1!
+#170000
+0!
+#175000
+b100000 q
+1!
+#180000
+0!
+#185000
+b100000 q
+1!
+#190000
+0!
+#195000
+b100000 q
+1!
+#200000
+0!
+#205000
+b100000 q
+1!
+#210000
+0!
+#215000
+b100000 q
+1!
+#220000
+0!
+#225000
+b100000 q
+1!
+#230000
+0!
+#235000
+b100000 q
+1!
+#240000
+0!
+#245000
+b100000 q
+1!
+#250000
+0!
+#255000
+b100000 q
+1!
+#260000
+0!
+#265000
+b100000 q
+1!
+#270000
+0!
+#275000
+b100000 q
+1!
+#280000
+0!
+#285000
+b100000 q
+1!
+#290000
+0!
+#295000
+b100000 q
+1!
+#300000
+0!
+#305000
+b100000 q
+1!
+#310000
+0!
+#315000
+b100000 q
+1!
+#320000
+0!
+#325000
+b100000 q
+1!
+#330000
+0!
+#335000
+b100000 q
+1!
+#340000
+0!
+#345000
+b100000 q
+1!
+#350000
+0!
+#355000
+b100000 q
+1!
+#360000
+0!
+#365000
+b100000 q
+1!
+#370000
+0!
+#375000
+b100000 q
+1!
+#380000
+0!
+#385000
+b100000 q
+1!
+#390000
+0!
+#395000
+b100000 q
+1!
+#400000
+0!
+#405000
+b100000 q
+1!
+#410000
+0!
+#415000
+b100000 q
+1!
+#420000
+0!
+#425000
+b100000 q
+1!
+#430000
+0!
+#435000
+b100000 q
+1!
+#440000
+0!
+#445000
+b100000 q
+1!
+#450000
+0!
+#455000
+b100000 q
+1!
+#460000
+0!
+#465000
+b100000 q
+1!
+#470000
+0!
+#475000
+b100000 q
+1!
+#480000
+0!
+#485000
+b100000 q
+1!
+#490000
+0!
+#495000
+b100000 q
+1!
+#500000
+0!
+#505000
+b100000 q
+1!
+#510000
+0!
+#515000
+b100000 q
+1!
+#520000
+0!
+#525000
+b100000 q
+1!
+#530000
+0!
+#535000
+b100000 q
+1!
+#540000
+0!
+#545000
+b100000 q
+1!
+#550000
+0!
+#555000
+b100000 q
+1!
+#560000
+0!
+#565000
+b100000 q
+1!
+#570000
+0!
+#575000
+b100000 q
+1!
+#580000
+0!
+#585000
+b100000 q
+1!
+#590000
+0!
+#595000
+b100000 q
+1!
+#600000
+0!
+#605000
+b100000 q
+1!
+#610000
+0!
+#615000
+b100000 q
+1!
+#620000
+0!
+#625000
+b100000 q
+1!
+#630000
+0!
+#635000
+b100000 q
+1!
+#640000
+0!
+#645000
+b100000 q
+1!
+#650000
+0!
+#655000
+b100000 q
+1!
+#660000
+0!
+#665000
+b100000 q
+1!
+#670000
+0!
+#675000
+b100000 q
+1!
+#680000
+0!
+#685000
+b100000 q
+1!
+#690000
+0!
+#695000
+b100000 q
+1!
+#700000
+0!
+#705000
+b100000 q
+1!
+#710000
+0!
+#715000
+b100000 q
+1!
+#720000
+0!
+#725000
+b100000 q
+1!
+#730000
+0!
+#735000
+b100000 q
+1!
+#740000
+0!
+#745000
+b100000 q
+1!
+#750000
+0!
+#755000
+b100000 q
+1!
+#760000
+0!
+#765000
+b100000 q
+1!
+#770000
+0!
+#775000
+b100000 q
+1!
+#780000
+0!
+#785000
+b100000 q
+1!
+#790000
+0!
+#795000
+b100000 q
+1!
+#800000
+0!
+#805000
+b100000 q
+1!
+#810000
+0!
+#815000
+b100000 q
+1!
+#820000
+0!
+#825000
+b100000 q
+1!
+#830000
+0!
+#835000
+b100000 q
+1!
+#840000
+0!
+#845000
+b100000 q
+1!
+#850000
+0!
+#855000
+b100000 q
+1!
+#860000
+0!
+#865000
+b100000 q
+1!
+#870000
+0!
+#875000
+b100000 q
+1!
+#880000
+0!
+#885000
+b100000 q
+1!
+#890000
+0!
+#895000
+b100000 q
+1!
+#900000
+0!
+#905000
+b100000 q
+1!
+#910000
+0!
+#915000
+b100000 q
+1!
+#920000
+0!
+#925000
+b100000 q
+1!
+#930000
+0!
+#935000
+b100000 q
+1!
+#940000
+0!
+#945000
+b100000 q
+1!
+#950000
+0!
+#955000
+b100000 q
+1!
+#960000
+0!
+#965000
+b100000 q
+1!
+#970000
+0!
+#975000
+b100000 q
+1!
+#980000
+0!
+#985000
+b100000 q
+1!
+#990000
+0!
+#995000
+b100000 q
+1!
+#1000000
+0!
+#1005000
+b100000 q
+1!
+#1010000
+0!
+#1015000
+b100000 q
+1!
+#1020000
+0!
+#1025000
+b100000 q
+1!
+#1030000
+0!
+#1035000
+b100000 q
+1!

@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module rv32i_core_tb;
-    parameter MEMORY="../memory.mem";
+    parameter MEMORY="memory.mem";
     // Clock signal declaration
     reg clk;
     reg reset_n;
@@ -25,6 +25,19 @@ module rv32i_core_tb;
         // Add other ports as required, like reset or additional signals, if needed
     );
 
+    initial begin
+        while(!(uut.i_reg_file.reg_file1[17] == 32'h5d))
+        begin
+            if(uut.i_reg_file.reg_file1[17] == 32'h5d) begin //Exit test using RISC-V International's riscv-tests pass/fail criteria
+                if(uut.i_reg_file.reg_file1[10] == 0)
+                    $display("\nPASS: exit code = 0x%h\n",uut.i_reg_file.reg_file1[10]>>1);
+                else begin
+                    $display("\nFAIL: exit code = 0x%h\n",uut.i_reg_file.reg_file1[10]>>1);
+                end
+            end
+        end
+    end
+
     // Simulation runtime control
     initial begin
         $dumpfile("wave.vcd");
@@ -33,7 +46,7 @@ module rv32i_core_tb;
         reset_n=0;
         #35;
         
-        reset_n=1; //release reset
+        reset_n=1; //release reset            
 
         //$dumpvars(0,uut.i_reg_file.reg_file1[1], uut.i_reg_file.reg_file1[2], uut.i_reg_file.reg_file1[3], uut.i_reg_file.reg_file1[4], uut.i_reg_file.reg_file1[5]);
         //$dumpvars(0,uut.i_reg_file.reg_file1[6], uut.i_reg_file.reg_file1[7], uut.i_reg_file.reg_file1[8], uut.i_reg_file.reg_file1[9], uut.i_reg_file.reg_file1[10]);

@@ -1,0 +1,143 @@
+
+Discarded input sections
+
+ .text          0x00000000        0x0 /tmp/cc9sSLED.o
+ .data          0x00000000        0x0 /tmp/cc9sSLED.o
+ .bss           0x00000000        0x0 /tmp/cc9sSLED.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ROM              0x00000000         0x00010000         xr
+RAM              0x00010000         0x00004000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+Address of section .text set to 0x0
+LOAD /home/muheet/Downloads/riscv32-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly/riscv/bin/../lib/gcc/riscv32-unknown-elf/14.2.0/../../../../riscv32-unknown-elf/lib/libm.a
+LOAD /home/muheet/Downloads/riscv32-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly/riscv/bin/../lib/gcc/riscv32-unknown-elf/14.2.0/../../../../riscv32-unknown-elf/lib/libc.a
+LOAD /home/muheet/Downloads/riscv32-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly/riscv/bin/../lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a
+LOAD /home/muheet/Downloads/riscv32-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly/riscv/bin/../lib/gcc/riscv32-unknown-elf/14.2.0/../../../../riscv32-unknown-elf/lib/libc.a
+LOAD /tmp/cc9sSLED.o
+LOAD /home/muheet/Downloads/riscv32-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly/riscv/bin/../lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a
+START GROUP
+LOAD /home/muheet/Downloads/riscv32-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly/riscv/bin/../lib/gcc/riscv32-unknown-elf/14.2.0/../../../../riscv32-unknown-elf/lib/libc.a
+LOAD /home/muheet/Downloads/riscv32-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly/riscv/bin/../lib/gcc/riscv32-unknown-elf/14.2.0/../../../../riscv32-unknown-elf/lib/libgloss.a
+END GROUP
+LOAD /home/muheet/Downloads/riscv32-elf-ubuntu-22.04-gcc-nightly-2025.01.17-nightly/riscv/bin/../lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a
+                0x00000000                        . = ALIGN (0x4)
+
+.text           0x00000000      0x6c4
+                [!provide]                        PROVIDE (__text_start = .)
+                [!provide]                        PROVIDE (__textstart = .)
+                [!provide]                        PROVIDE (__rela_iplt_start = .)
+ *(.rela.iplt)
+                [!provide]                        PROVIDE (__rela_iplt_end = .)
+ *(.rela.plt)
+ *(.text.boot)
+ *(SORT_NONE(.init))
+ *(.text.unlikely .text.*_unlikely .text.unlikely.*)
+ *(.text.exit .text.exit.*)
+ *(.text.startup .text.startup.*)
+ *(.text.hot .text.hot.*)
+ *(SORT_BY_NAME(.text.sorted.*))
+ *(.text .stub .text.* .gnu.linkonce.t.*)
+ .text.init     0x00000000      0x6c4 /tmp/cc9sSLED.o
+                0x00000000                _start
+ *(.gnu.warning)
+ *(SORT_NONE(.fini))
+ *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
+ *(SORT_BY_NAME(.ctors.*))
+ *(.ctors)
+ *crtbegin.o(.dtors)
+ *crtbegin?.o(.dtors)
+ *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+ *(SORT_BY_NAME(.dtors.*))
+ *(.dtors)
+                0x000006c4                        . = ALIGN (0x4)
+                [!provide]                        PROVIDE (__etext = .)
+                [!provide]                        PROVIDE (_etext = .)
+                [!provide]                        PROVIDE (etext = .)
+
+.rela.dyn       0x000006c4        0x0
+ .rela.got      0x000006c4        0x0 /tmp/cc9sSLED.o
+
+.rodata         0x000006c4        0x0
+                [!provide]                        PROVIDE (__init_array_start = .)
+ *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
+ *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
+                [!provide]                        PROVIDE (__init_array_end = .)
+                [!provide]                        PROVIDE (__fini_array_start = .)
+ *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
+ *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
+                [!provide]                        PROVIDE (__fini_array_end = .)
+ *(.rodata .rodata.* .gnu.linkonce.r.*)
+ *(.rodata1)
+                0x000006c4                        . = ALIGN (0x4)
+
+.data           0x00010000        0x0
+                0x00010000                        __DATA_BEGIN__ = .
+                0x00010000                        __SDATA_BEGIN__ = .
+ *(.sdata2 .sdata2.* .gnu.linkonce.s2.*)
+ *(.data1)
+ *(.data .data.* .gnu.linkonce.d.*)
+ *(.data.rel.ro.local* .gnu.linkonce.d.rel.ro.local.*)
+ *(.data.rel.ro .data.rel.ro.* .gnu.linkonce.d.rel.ro.*)
+ *(.dynamic)
+ *(.srodata.cst16)
+ *(.srodata.cst8)
+ *(.srodata.cst4)
+ *(.srodata.cst2)
+ *(.srodata .srodata.*)
+ *(.sdata .sdata.* .gnu.linkonce.s.*)
+                [!provide]                        PROVIDE (__tdata_start = .)
+ *(.tdata .tdata.* .gnu.linkonce.td.*)
+                0x00010000                        . = ALIGN (0x4)
+                0x00010000                        _edata = .
+                [!provide]                        PROVIDE (edata = .)
+                0x00010000                        . = .
+
+.tohost         0x00010000       0x48
+ .tohost        0x00010000       0x48 /tmp/cc9sSLED.o
+                0x00010000                tohost
+                0x00010040                fromhost
+
+.got            0x00010048       0x24
+ .got           0x00010048       0x24 /tmp/cc9sSLED.o
+                0x00010048                _GLOBAL_OFFSET_TABLE_
+
+.got.plt        0x0001006c        0x8
+ .got.plt       0x0001006c        0x8 /tmp/cc9sSLED.o
+
+.bss            0x00010074        0x0
+                0x00010074                        __bss_start = .
+ *(.dynsbss)
+ *(.sbss .sbss.* .gnu.linkonce.sb.*)
+ *(.sbss2 .sbss2.* .gnu.linkonce.sb2.*)
+ *(.tbss .tbss.* .gnu.linkonce.tb.*)
+ *(.tcommon)
+ *(.scommon)
+ *(.dynbss)
+ *(.bss .bss.* .gnu.linkonce.b.*)
+                [!provide]                        PROVIDE (__preinit_array_start = .)
+ *(.preinit_array)
+                [!provide]                        PROVIDE (__preinit_array_end = .)
+ *(COMMON)
+                0x00010074                        . = ALIGN ((. != 0x0)?0x4:0x1)
+                0x00010074                        . = ALIGN (0x4)
+                0x00010074                        __bss_end = .
+                0x00010800                        __global_pointer$ = MIN ((__SDATA_BEGIN__ + 0x800), MAX ((__DATA_BEGIN__ + 0x800), (__bss_end - 0x800)))
+                0x00010074                        _end = .
+                [!provide]                        PROVIDE (end = .)
+                0x00010000                        __ram_start = ORIGIN (RAM)
+                0x00014000                        __ram_end = (__ram_start + LENGTH (RAM))
+                0x00000000                        __rom_start = ORIGIN (ROM)
+                0x00010000                        __rom_end = (__rom_start + LENGTH (ROM))
+                0x00013ffc                        __stack_pointer = (__ram_end - 0x4)
+OUTPUT(./obj/add.elf elf32-littleriscv)
+
+.riscv.attributes
+                0x00000000       0x27
+ .riscv.attributes
+                0x00000000       0x27 /tmp/cc9sSLED.o

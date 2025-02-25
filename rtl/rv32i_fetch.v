@@ -1,15 +1,3 @@
-//////////////////////////////////////////////////////////////////////////////////
-// Company: MERL-UITU
-// Engineer: Abdul Muheet Ghani
-// 
-// Design Name: RV32IMACZicsr for Linux
-// Module Name: RV32I-top
-// Project Name: RV32IMACZicsr for linux
-// Target Devices: 
-// Description: 
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 module rv32i_fetch
 #(
     parameter XLEN = 32
@@ -26,39 +14,43 @@ module rv32i_fetch
     input  [XLEN-1:0] I_immediate_in,
     input  [XLEN-1:0] rs1_in,
 
-    output reg [XLEN-1:0] fetch_address_o
+    input             fetch_ready_o,
+    output reg        fetch_valid_o,
+    output [XLEN-1:0] fetch_address_o
 );
 
+    reg  [XLEN-1:0] pcplus4,fetch_address;
 
-   wire [XLEN-1:0] pc;
-   reg  [XLEN-1:0] pcplus4;
-   
-   assign pc              = (pc_sel == 2'b00) ? pcplus4 :
-                            (pc_sel == 2'b01) ? UJ_immediate_in :
-                            (pc_sel == 2'b10) ? SB_immediate_in :
-                            (pc_sel == 2'b11) ? I_immediate_in + rs1_in : 0;
-
+    assign fetch_address_o = fetch_address;
 
     always @(posedge clk_in, negedge reset_n)
     begin
-        if(!reset_n)
-        begin
-            fetch_address_o <= 0;
-        end
-        else begin
-            fetch_address_o <= pc;
-        end
-    end
-
-    always @(posedge clk_in, negedge reset_n)
-    begin
-        if(!reset_n)
+        if (!reset_n)
         begin
             pcplus4 <= 0;
         end
-        else begin
-            pcplus4 <= pc + 4;
+        else if (fetch_ready_o)
+        begin
+            pcplus4 <= fetch_address + 4;
         end
+        else begin
+            pcplus4 <= pcplus4;
+        end
+    end
+
+    always @(*)
+    begin
+        case (pc_sel)
+            2'b00: fetch_address = pcplus4;
+            2'b01: fetch_address = UJ_immediate_in;
+            2'b10: fetch_address = SB_immediate_in;
+            2'b11: fetch_address = I_immediate_in + rs1_in;
+            default: fetch_address = 0;
+        endcase
+    end
+
+    always @(*) begin
+        fetch_valid_o = reset_n;
     end
 
 endmodule

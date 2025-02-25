@@ -12,6 +12,7 @@ rtlfiles="../include/RV32_pkg.vh \
           ../rtl/register_file.v \
           ../rtl/rv32i_core.v \
           ../rtl/Type_decoder.v \
+          ../rtl/native_intf_arb.v \
           src/rv32i_core_tb.v"
 
 rm -rf $OUTPUT_DIR

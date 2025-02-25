@@ -12,12 +12,16 @@
 
 module rv32i_core #(parameter XLEN = 32)
 (
-    input             clk,
-    input             reset_n,
-    input             we,
-    input             reset,
-    input  [XLEN-1:0] data_in,
-    output [14:0] control_unit_out
+    input                     clk,
+    input                     reset_n,
+
+	 output                    mem_valid,
+	 input                     mem_ready,
+
+	 output     [XLEN-1:0]     mem_addr,
+	 output     [XLEN-1:0]     mem_wdata,
+	 output     [(XLEN/8)-1:0] mem_wstrb,
+	 input      [XLEN-1:0]     mem_rdata
     
 );
 
@@ -25,6 +29,8 @@ module rv32i_core #(parameter XLEN = 32)
    //ports
    /////////////////////////////////////////////////////////
 
+   wire [14:0]     control_unit_out;
+   wire [XLEN-1:0] data_in;
    wire [XLEN-1:0] fetch_address;
    wire [XLEN-1:0] OUT_T;
    wire [XLEN-1:0] addr;
@@ -47,7 +53,9 @@ module rv32i_core #(parameter XLEN = 32)
    wire [4:0]      rd ;          //destination register
    wire            branch_true;
    wire [XLEN-1:0] csr_data_out;
-   reg [XLEN-1:0]  wb,address_q;
+   reg [XLEN-1:0]  wb,address_q,instr_q,fetch_address_q;
+   wire [XLEN-1:0] instruction_fetch;
+   wire [XLEN-1:0] read_data;
    reg [1:0]       pc_sel=0;
 
    wire            external_int_in;
@@ -64,6 +72,10 @@ module rv32i_core #(parameter XLEN = 32)
    wire [31:0]     PC;
    wire            trap_true;
    wire            return_trap;
+   wire            fetch_valid;
+   wire            fetch_ready;
+   wire            mem_instr_resp;
+   wire            mem_data_rd_resp;
 
    /////////////////////////////////////////////////////////
    //procedural assignment
@@ -102,7 +114,7 @@ module rv32i_core #(parameter XLEN = 32)
    //assign OUT_T = (branch_p) ? SB_type : offset_adder;
 
    // 11:7 destination register
-   assign rd = contrl_decoder[3] ? 5'b00001 : inst_out[11:7];
+   assign rd = contrl_decoder[3] ? 5'b00001 : instr_q[11:7];
 
    /////////////////////////////////////////////////////////
    //Module Instantiation
@@ -120,18 +132,20 @@ module rv32i_core #(parameter XLEN = 32)
       .I_immediate_in  (I_type),
       .rs1_in          (reg_1),
 
+      .fetch_ready_o   (fetch_ready),
+      .fetch_valid_o   (fetch_valid),
       .fetch_address_o (fetch_address)
    );
 
    //Address of instruction_mem from 2 to 13 because of offset = 4
    ram instruction_mem(.clk_in          (clk),
-                       .address_in      (fetch_address[13:2]),
+                       .address_in      (mem_addr[13:2]),
                        .data_in         (data_in),
-                       .instruction_out (inst_out),
+                       .instruction_out (instruction_fetch),
                        .we_in           (we)
                      ); 
 
-   control i_control_decoder(.opcode_in      (inst_out),
+   control i_control_decoder(.opcode_in      (instr_q),
                              .illegal_ins_out(illegal_instruction_in),
                              .ecall_out      (ecall_in),
                              .ebreak_out     (ebreak_in),
@@ -140,8 +154,8 @@ module rv32i_core #(parameter XLEN = 32)
                            );
 
    unit i_control_unit(.type_decode_in (contrl_decoder),
-                     .function_3_in    (inst_out[14:12]),
-                     .function_7_in    (inst_out[30]),
+                     .function_3_in    (instr_q[14:12]),
+                     .function_7_in    (instr_q[30]),
                      .control_unit_out (control_unit_out)
                      );
 
@@ -156,7 +170,7 @@ module rv32i_core #(parameter XLEN = 32)
    // Ouput of control unit bit 11 presents branch enable
    branch i_branch(.operand1_in     (reg_1),
                  .operand2_in     (reg_2),
-                 .function_3_in   (inst_out[14:12]),
+                 .function_3_in   (instr_q[14:12]),
                  .branch_en_in    (control_unit_out[11]),
                  .branch_taken_out(branch_true)
                  );
@@ -164,27 +178,74 @@ module rv32i_core #(parameter XLEN = 32)
    // Output of control unit control_unit_out[12] present mem_write enable
    // output of control unit control_unit_out[13] present mem_to_reg enable
    data_mem i_data_mem(.clk_in        (clk),
-                     .address_in    (ALU_OUTPUT),
-                     .store_data_in (operand2),
-                     .store_en_in   (control_unit_out[12]),
-                     .load_en_in    (control_unit_out[13]),
-                     .data_out      (write_adder)
+                     .address_in    (mem_addr),
+                     .store_data_in (mem_wdata),
+                     .store_en_in   (mem_valid & (&mem_wstrb)),
+                     .load_en_in    (mem_valid & !(&mem_wstrb)),
+                     .data_out      (read_data)
                      );
+
+   assign mem_rdata = mem_instr ? instruction_fetch : read_data;
+
+   native_intf_arb i_arb(
+     .mem_instr_valid   (fetch_valid   ),
+     .mem_instr_ready   (fetch_ready   ),
+     .mem_instr_addr    (fetch_address ),
+     .mem_instr_data    (inst_out      ),
+     .mem_instr_resp    (mem_instr_resp),
+
+     .mem_data_wr_valid (control_unit_out[12]), // store_en_in
+     .mem_data_wr_addr  (ALU_OUTPUT          ), // ALU_OUTPUT
+     .mem_data_wr_data  (operand2            ), // store_data_in
+     .mem_data_wr_ready (),                     // high priority
+     .mem_data_wr_resp  (),
+
+     .mem_data_rd_valid (control_unit_out[13]), //load_en_in
+     .mem_data_rd_addr  (ALU_OUTPUT          ), // address_in
+     .mem_data_rd_ready (),                     // high priority
+     .mem_data_resp     (write_adder         ),
+     .mem_data_rd_resp  (mem_data_rd_resp    ),
+
+     .mem_instr_valid_o  (mem_valid           ),
+     .mem_instr_o        (mem_instr           ),
+     .mem_instr_ready_o  (1'b1           ),
+     .mem_data_addr_o    (mem_addr            ),   
+     .mem_data_wr_data_o (mem_wdata           ),   
+     .mem_data_rd_data_i (mem_rdata           ),
+     .mem_data_wr_strb_o (mem_wstrb           )   
+   );
+
+   always @(posedge clk, negedge reset_n) begin
+      if(!reset_n)begin
+         instr_q <= 0;
+         fetch_address_q <= 0;
+      end
+      else begin
+         if(mem_instr) begin
+            instr_q <= inst_out;
+            fetch_address_q <= fetch_address;
+         end
+         else begin
+            instr_q <= 0;
+            fetch_address_q <= 0;
+         end
+      end
+   end
 
    // 19:15 rs1 address
    // 24:20 rs2 address
    reg_file i_reg_file(.clk_in               (clk),
                      .reset_in               (reset_n),
-                     .rs1_address_in         (inst_out[19:15]),
-                     .rs2_address_in         (inst_out[24:20]),
+                     .rs1_address_in         (instr_q[19:15]),
+                     .rs2_address_in         (instr_q[24:20]),
                      .destination_register_in(rd),
                      .input_data_in          (wb),
                      .rs1_data_out           (operand1),
                      .rs2_data_out           (operand2)
                      );
 
-   immediate i_immediate(.instruction_in    (inst_out),
-                       .pc_in             (fetch_address),
+   immediate i_immediate(.instruction_in    (instr_q),
+                       .pc_in             (fetch_address_q),
                        .I_type_imm_out    (I_type),
                        .S_type_imm_out    (S_type),
                        .SB_type_imm_out   (SB_type),
@@ -197,7 +258,7 @@ module rv32i_core #(parameter XLEN = 32)
    /////////////////////////////////////////////////////////
 
    always @(posedge clk) begin
-      if(reset)
+      if(reset_n)
       begin
          address_q = 32'b0;
       end
